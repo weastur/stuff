@@ -1,0 +1,18 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/debian10"
+  config.vm.synced_folder "./data", "/mnt/host_data", mount_options: ["ro"]
+  config.vm.hostname = "zfs"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+    vb.cpus = 2
+    vb.check_guest_additions = true
+    vb.name = "zfs"
+  end
+
+  config.vm.disk :dvd, size: "10GB", name: "extra_storage"
+  config.vm.provision :shell, path: "bootstrap.sh"
+end
