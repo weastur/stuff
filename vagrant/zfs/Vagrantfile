@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "generic/debian10"
+  config.vm.box = "generic/ubuntu2010"
   config.vm.synced_folder "./data", "/mnt/host_data", mount_options: ["ro"]
   config.vm.hostname = "zfs"
 
@@ -13,6 +13,15 @@ Vagrant.configure("2") do |config|
     vb.name = "zfs"
   end
 
-  config.vm.disk :dvd, size: "10GB", name: "extra_storage"
+  disks = {
+    "zfs_striped_0" => {:size => "10GB"},
+    "zfs_mirror_0" => {:size => "10GB"},
+    "zfs_mirror_1" => {:size => "10GB"}
+  }
+
+  disks.each do |name, info|
+    config.vm.disk :disk, size: info[:size], name: name
+  end
+
   config.vm.provision :shell, path: "bootstrap.sh"
 end
